@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<!--
+    Форма добавления нового дела
+    Автор: Иванов Егор Борисович
+-->
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление дела - Юридическая фирма</title>
+
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Подключение Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .required-label::after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<!-- Навигационная панель -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="fas fa-tachometer-alt"></i> Панель управления
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/cases/list}">
+                        <i class="fas fa-briefcase"></i> Список дел
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Основной контент -->
+<div class="container">
+    <div class="form-wrapper">
+        <!-- Заголовок -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-plus-circle"></i> Добавление нового дела
+                </h1>
+                <p class="text-muted">Заполните форму для создания нового дела</p>
+            </div>
+        </div>
+
+        <!-- Отображение ошибок -->
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Форма добавления дела -->
+        <form th:action="@{/cases/add}" th:object="${caseEntity}" method="post" class="needs-validation" novalidate>
+
+            <!-- Блок: Основная информация -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Основная информация
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Номер дела -->
+                        <div class="col-md-6 mb-3">
+                            <label for="caseNumber" class="form-label required-label">
+                                Номер дела
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{caseNumber}"
+                                   th:errorclass="is-invalid"
+                                   id="caseNumber"
+                                   placeholder="2025/001/ГР"
+                                   required
+                                   maxlength="50">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('caseNumber')}" th:errors="*{caseNumber}"></div>
+                        </div>
+
+                        <!-- Дата открытия -->
+                        <div class="col-md-6 mb-3">
+                            <label for="openDate" class="form-label required-label">
+                                Дата открытия дела
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{openDate}"
+                                   th:errorclass="is-invalid"
+                                   id="openDate"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('openDate')}" th:errors="*{openDate}"></div>
+                        </div>
+
+                        <!-- Название дела -->
+                        <div class="col-md-12 mb-3">
+                            <label for="title" class="form-label required-label">
+                                Название дела
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{title}"
+                                   th:errorclass="is-invalid"
+                                   id="title"
+                                   placeholder="Иск о взыскании задолженности"
+                                   required
+                                   maxlength="200">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                        </div>
+
+                        <!-- Описание дела -->
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label required-label">
+                                Описание дела
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{description}"
+                                      th:errorclass="is-invalid"
+                                      id="description"
+                                      rows="5"
+                                      placeholder="Подробное описание обстоятельств дела..."
+                                      required></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок: Классификация -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tags"></i> Классификация
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Категория -->
+                        <div class="col-md-4 mb-3">
+                            <label for="category" class="form-label required-label">
+                                Категория дела
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{category}"
+                                    id="category"
+                                    required>
+                                <option value="">-- Выберите категорию --</option>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat}"
+                                        th:text="${cat.displayName}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите категорию дела</div>
+                        </div>
+
+                        <!-- Статус -->
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label required-label">
+                                Статус дела
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{status}"
+                                    id="status"
+                                    required>
+                                <option th:each="stat : ${statuses}"
+                                        th:value="${stat}"
+                                        th:text="${stat.displayName}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите статус дела</div>
+                        </div>
+
+                        <!-- Приоритет -->
+                        <div class="col-md-4 mb-3">
+                            <label for="priority" class="form-label required-label">
+                                Приоритет
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{priority}"
+                                    id="priority"
+                                    required>
+                                <option th:each="prior : ${priorities}"
+                                        th:value="${prior}"
+                                        th:text="${prior.displayName}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите приоритет</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок: Участники -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users"></i> Участники дела
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Клиент -->
+                        <div class="col-md-6 mb-3">
+                            <label for="client" class="form-label required-label">
+                                Клиент
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{client.id}"
+                                    id="client"
+                                    required>
+                                <option value="">-- Выберите клиента --</option>
+                                <option th:each="cl : ${clients}"
+                                        th:value="${cl.id}"
+                                        th:text="${cl.fullName + ' (' + cl.email + ')'}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите клиента</div>
+                        </div>
+
+                        <!-- Юрист -->
+                        <div class="col-md-6 mb-3">
+                            <label for="lawyer" class="form-label">
+                                Назначенный юрист
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{lawyer.id}"
+                                    id="lawyer">
+                                <option value="">-- Не назначен --</option>
+                                <option th:each="law : ${lawyers}"
+                                        th:value="${law.id}"
+                                        th:text="${law.fullName}">
+                                </option>
+                            </select>
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок: Дополнительные сведения -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt"></i> Дополнительные сведения
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Стоимость -->
+                        <div class="col-md-4 mb-3">
+                            <label for="cost" class="form-label">
+                                Стоимость услуг (₽)
+                            </label>
+                            <input type="number"
+                                   class="form-control"
+                                   th:field="*{cost}"
+                                   id="cost"
+                                   placeholder="50000.00"
+                                   step="0.01"
+                                   min="0">
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+
+                        <!-- Дата заседания -->
+                        <div class="col-md-4 mb-3">
+                            <label for="nextHearingDate" class="form-label">
+                                Дата следующего заседания
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{nextHearingDate}"
+                                   id="nextHearingDate">
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+
+                        <!-- Дата закрытия -->
+                        <div class="col-md-4 mb-3">
+                            <label for="closeDate" class="form-label">
+                                Дата закрытия дела
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{closeDate}"
+                                   id="closeDate">
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+
+                        <!-- Заметки -->
+                        <div class="col-md-12 mb-3">
+                            <label for="notes" class="form-label">
+                                Заметки по делу
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{notes}"
+                                      id="notes"
+                                      rows="3"
+                                      placeholder="Дополнительные комментарии..."></textarea>
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <!-- Кнопка отмены -->
+                        <a th:href="@{/cases/list}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+
+                        <!-- Кнопка сохранения -->
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Создать дело
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Подключение Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript для валидации формы -->
+<script>
+    (function() {
+        'use strict';
+
+        const form = document.querySelector('.needs-validation');
+
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        }, false);
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование дела - Юридическая фирма</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .form-control:read-only {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/cases/list}">
+                        <i class="fas fa-briefcase"></i> Список дел
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="form-wrapper">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-edit"></i> Редактирование дела
+                </h1>
+                <p class="text-muted">Измените данные дела</p>
+            </div>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="@{/cases/edit/{id}(id=${caseEntity.id})}" th:object="${caseEntity}" method="post">
+
+            <!-- Скрытое поле ID -->
+            <input type="hidden" th:field="*{id}">
+
+            <!-- Системная информация -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Системная информация
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">ID дела</label>
+                            <input type="text" class="form-control" th:value="${caseEntity.id}" readonly>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Дата создания</label>
+                            <input type="text" class="form-control"
+                                   th:value="${#temporals.format(caseEntity.createdAt, 'dd.MM.yyyy HH:mm')}"
+                                   readonly>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Дата обновления</label>
+                            <input type="text" class="form-control"
+                                   th:value="${#temporals.format(caseEntity.updatedAt, 'dd.MM.yyyy HH:mm')}"
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Основная информация (аналогично add.html, но с заполненными полями) -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Основная информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="caseNumber" class="form-label">Номер дела *</label>
+                            <input type="text" class="form-control" th:field="*{caseNumber}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="openDate" class="form-label">Дата открытия *</label>
+                            <input type="date" class="form-control" th:field="*{openDate}" required>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="title" class="form-label">Название дела *</label>
+                            <input type="text" class="form-control" th:field="*{title}" required>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">Описание *</label>
+                            <textarea class="form-control" th:field="*{description}" rows="5" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Классификация -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Классификация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="category" class="form-label">Категория *</label>
+                            <select class="form-select" th:field="*{category}" required>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat}"
+                                        th:text="${cat.displayName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Статус *</label>
+                            <select class="form-select" th:field="*{status}" required>
+                                <option th:each="stat : ${statuses}"
+                                        th:value="${stat}"
+                                        th:text="${stat.displayName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="priority" class="form-label">Приоритет *</label>
+                            <select class="form-select" th:field="*{priority}" required>
+                                <option th:each="prior : ${priorities}"
+                                        th:value="${prior}"
+                                        th:text="${prior.displayName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Участники -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Участники дела</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="client" class="form-label">Клиент *</label>
+                            <select class="form-select" th:field="*{client.id}" required>
+                                <option th:each="cl : ${clients}"
+                                        th:value="${cl.id}"
+                                        th:text="${cl.fullName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lawyer" class="form-label">Юрист</label>
+                            <select class="form-select" th:field="*{lawyer.id}">
+                                <option value="">-- Не назначен --</option>
+                                <option th:each="law : ${lawyers}"
+                                        th:value="${law.id}"
+                                        th:text="${law.fullName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительные сведения -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Дополнительные сведения</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="cost" class="form-label">Стоимость (₽)</label>
+                            <input type="number" class="form-control" th:field="*{cost}" step="0.01" min="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="nextHearingDate" class="form-label">Дата заседания</label>
+                            <input type="date" class="form-control" th:field="*{nextHearingDate}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="closeDate" class="form-label">Дата закрытия</label>
+                            <input type="date" class="form-control" th:field="*{closeDate}">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="notes" class="form-label">Заметки</label>
+                            <textarea class="form-control" th:field="*{notes}" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/cases/list}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Сохранить изменения
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

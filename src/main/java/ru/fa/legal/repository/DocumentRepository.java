@@ -1,18 +1,10 @@
-// ============================================
-// DocumentRepository.java
-// ============================================
 package ru.fa.legal.repository;
-
-// Импорт Spring Data JPA
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-// Импорт моделей
 import ru.fa.legal.model.Document;
 import ru.fa.legal.model.Case;
 import ru.fa.legal.model.DocumentType;
 import ru.fa.legal.model.DocumentStatus;
-
-// Импорт классов для работы с коллекциями
 import java.util.List;
 
 /**
@@ -20,7 +12,7 @@ import java.util.List;
  * Обеспечивает доступ к данным документов в БД.
  * Реализует доступ к дочерним сущностям в связи "родитель-дочка".
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга
  * @version 1.0
  */
 @Repository

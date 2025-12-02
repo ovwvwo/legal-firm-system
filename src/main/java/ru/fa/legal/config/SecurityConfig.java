@@ -1,6 +1,4 @@
 package ru.fa.legal.config;
-
-// Импорт Spring Security классов
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @EnableWebSecurity - включает поддержку Spring Security
  * @EnableMethodSecurity - включает аннотации безопасности на уровне методов
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга Ивановна
  * @version 1.0
  */
 @Configuration
@@ -38,10 +36,8 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Настраиваем HttpSecurity
-        http
-                // Настройка правил авторизации
-                .authorizeHttpRequests(authorize -> authorize
+
+        http.authorizeHttpRequests(authorize -> authorize
                         // Публичные URL (доступны без аутентификации)
                         // permitAll() - разрешает доступ всем пользователям
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
@@ -64,7 +60,6 @@ public class SecurityConfig {
 
                 // Настройка формы входа
                 .formLogin(form -> form
-                        // URL страницы входа
                         .loginPage("/login")
                         // URL для обработки данных формы входа
                         .loginProcessingUrl("/perform_login")
@@ -113,8 +108,8 @@ public class SecurityConfig {
                         .accessDeniedPage("/access-denied")
                 )
 
-                // Отключаем CSRF защиту для REST API (если используется)
-                // В продакшене лучше оставить включенной
+                // Отключаем CSRF защиту для REST API
+                // В продакшене лучше оставить включенной!!!!!!
                 .csrf(csrf -> csrf
                         // Игнорируем CSRF для API endpoints
                         .ignoringRequestMatchers("/api/**")
@@ -134,7 +129,6 @@ public class SecurityConfig {
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        // Получаем и возвращаем AuthenticationManager из конфигурации
         return authConfig.getAuthenticationManager();
     }
 

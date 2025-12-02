@@ -1,15 +1,8 @@
 package ru.fa.legal.model;
-
-// Импорт аннотаций JPA для работы с базой данных
 import jakarta.persistence.*;
-// Импорт аннотаций для валидации данных
 import jakarta.validation.constraints.*;
-// Импорт аннотаций Lombok для генерации кода
 import lombok.*;
-
-// Импорт классов для работы с датами
 import java.time.LocalDateTime;
-// Импорт классов для работы с коллекциями
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +10,7 @@ import java.util.Set;
  * Сущность пользователя системы.
  * Представляет пользователя в базе данных и содержит информацию о его учетных данных.
  *
- * @author Иванов Егор Борисович
+ * @author Kiseleva Olga
  * @version 1.0
  */
 // @Entity - помечает класс как сущность JPA, которая будет сохраняться в БД
@@ -184,7 +177,6 @@ public class User {
      */
     @Override
     public String toString() {
-        // Формируем строку без коллекций для избежания рекурсии
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +

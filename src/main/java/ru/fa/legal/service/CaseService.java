@@ -1,19 +1,13 @@
 package ru.fa.legal.service;
-
-// Импорт Spring аннотаций
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-// Импорт моделей и репозиториев
 import ru.fa.legal.model.Case;
 import ru.fa.legal.model.CaseStatus;
 import ru.fa.legal.model.CaseCategory;
 import ru.fa.legal.model.User;
 import ru.fa.legal.repository.CaseRepository;
 import ru.fa.legal.repository.UserRepository;
-
-// Импорт классов для работы с коллекциями и датами
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;

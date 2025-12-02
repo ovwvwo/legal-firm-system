@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!--
+    Страница списка пользователей
+-->
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список пользователей - Юридическая фирма</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .badge-role {
+            padding: 6px 12px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="fas fa-tachometer-alt"></i> Панель управления
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/users/list}">
+                        <i class="fas fa-users"></i> Пользователи
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Выход
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-users"></i> Управление пользователями</h1>
+            <p class="text-muted">Всего пользователей: <span th:text="${#lists.size(listUsers)}">0</span></p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a th:href="@{/users/add}" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Добавить пользователя
+            </a>
+            <!-- Кнопка поиска -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal">
+                <i class="fas fa-search"></i> Поиск
+            </button>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form th:action="@{/users/filter}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="role" class="form-label">Фильтр по роли:</label>
+                    <select class="form-select" id="role" name="role" onchange="this.form.submit()">
+                        <option value="">Все роли</option>
+                        <option value="CLIENT" th:selected="${selectedRole?.name() == 'CLIENT'}">Клиент</option>
+                        <option value="LAWYER" th:selected="${selectedRole?.name() == 'LAWYER'}">Юрист</option>
+                        <option value="MANAGER" th:selected="${selectedRole?.name() == 'MANAGER'}">Менеджер</option>
+                        <option value="ADMIN" th:selected="${selectedRole?.name() == 'ADMIN'}">Администратор</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Пользователь</th>
+                        <th>Email</th>
+                        <th>Телефон</th>
+                        <th>Роль</th>
+                        <th>Статус</th>
+                        <th>Дата регистрации</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(listUsers)}">
+                        <td colspan="8" class="text-center text-muted">
+                            <i class="fas fa-users-slash fa-3x mb-3 d-block"></i>
+                            <p>Нет пользователей для отображения</p>
+                        </td>
+                    </tr>
+
+                    <tr th:each="user : ${listUsers}" th:onclick="'window.location.href=\'' + @{/users/view/{id}(id=${user.id})} + '\''">
+                        <td th:text="${user.id}">1</td>
+
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar" th:text="${#strings.substring(user.fullName, 0, 1)}">И</div>
+                                <div>
+                                    <strong th:text="${user.fullName}">Иван Иванов</strong><br>
+                                    <small class="text-muted" th:text="${user.username}">ivanov</small>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <i class="fas fa-envelope text-muted"></i>
+                            <span th:text="${user.email}">email@example.com</span>
+                        </td>
+
+                        <td>
+                            <i class="fas fa-phone text-muted"></i>
+                            <span th:if="${user.phoneNumber != null}" th:text="${user.phoneNumber}">+7 999 123-45-67</span>
+                            <span th:if="${user.phoneNumber == null}" class="text-muted">Не указан</span>
+                        </td>
+
+                        <td>
+                                <span class="badge badge-role"
+                                      th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' :
+                                                      ${user.role.name() == 'MANAGER'} ? 'bg-warning' :
+                                                      ${user.role.name() == 'LAWYER'} ? 'bg-info' :
+                                                      'bg-secondary'"
+                                      th:text="${user.role.name()}">
+                                    ROLE
+                                </span>
+                        </td>
+
+                        <td>
+                            <span th:if="${user.enabled}" class="badge bg-success">Активен</span>
+                            <span th:if="${!user.enabled}" class="badge bg-danger">Заблокирован</span>
+                        </td>
+
+                        <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2025 10:00</td>
+
+                        <td onclick="event.stopPropagation();">
+                            <a th:href="@{/users/view/{id}(id=${user.id})}"
+                               class="btn btn-sm btn-info"
+                               title="Просмотр">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a th:href="@{/users/edit/{id}(id=${user.id})}"
+                               class="btn btn-sm btn-warning"
+                               title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="confirmDelete(event, [[${user.id}]], [[${user.username}]])"
+                                    title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+
+                            <!-- Кнопка блокировки/разблокировки -->
+                            <button type="button"
+                                    class="btn btn-sm"
+                                    th:classappend="${user.enabled} ? 'btn-secondary' : 'btn-success'"
+                                    onclick="toggleStatus(event, [[${user.id}]], [[${user.enabled}]])"
+                                    th:title="${user.enabled} ? 'Заблокировать' : 'Активировать'">
+                                <i class="fas" th:classappend="${user.enabled} ? 'fa-lock' : 'fa-unlock'"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="searchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-search"></i> Поиск пользователей
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/users/search}" method="get">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="keyword" class="form-label">Ключевое слово</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword"
+                               placeholder="Поиск по имени, email или телефону">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Формы для действий (скрытые) -->
+<form id="deleteForm" method="post" style="display: none;"></form>
+<form id="toggleForm" method="post" style="display: none;"></form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    function confirmDelete(event, userId, username) {
+        event.stopPropagation();
+
+        if (confirm('Вы действительно хотите удалить пользователя "' + username + '"?\nЭто действие нельзя отменить.')) {
+            const form = document.getElementById('deleteForm');
+            form.action = /*[[@{/users/delete/}]]*/ '/users/delete/' + userId;
+            form.submit();
+        }
+    }
+
+    function toggleStatus(event, userId, currentStatus) {
+        event.stopPropagation();
+
+        const action = currentStatus ? 'заблокировать' : 'активировать';
+
+        if (confirm('Вы действительно хотите ' + action + ' этого пользователя?')) {
+            const form = document.getElementById('toggleForm');
+            form.action = /*[[@{/users/toggle-status/}]]*/ '/users/toggle-status/' + userId;
+            form.submit();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,13 +1,7 @@
 package ru.fa.legal.model;
-
-// Импорт аннотаций JPA
 import jakarta.persistence.*;
-// Импорт аннотаций валидации
 import jakarta.validation.constraints.*;
-// Импорт Lombok аннотаций
 import lombok.*;
-
-// Импорт классов для работы с датами
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,7 +10,7 @@ import java.time.LocalDateTime;
  * Представляет документ, связанный с делом (дочерняя сущность).
  * Реализует связь "родитель-дочка" с делом (Case).
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга Ивановна
  * @version 1.0
  */
 // @Entity - помечает класс как сущность JPA
@@ -49,7 +43,6 @@ public class Document {
     // fetch = LAZY - ленивая загрузка связанной сущности
     @ManyToOne(fetch = FetchType.LAZY)
     // @JoinColumn - указывает столбец для связи
-    // name = "case_id" - имя столбца внешнего ключа
     // nullable = false - связь обязательна (документ всегда принадлежит делу)
     @JoinColumn(name = "case_id", nullable = false)
     @NotNull(message = "Дело обязательно для указания")

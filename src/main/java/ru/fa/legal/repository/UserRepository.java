@@ -1,18 +1,8 @@
-
-// ============================================
-// UserRepository.java
-// ============================================
 package ru.fa.legal.repository;
-
-// Импорт Spring Data JPA репозитория
 import org.springframework.data.jpa.repository.JpaRepository;
-// Импорт аннотации для Spring компонента
 import org.springframework.stereotype.Repository;
-// Импорт модели пользователя
 import ru.fa.legal.model.User;
 import ru.fa.legal.model.UserRole;
-
-// Импорт классов для работы с коллекциями
 import java.util.List;
 import java.util.Optional;
 
@@ -21,12 +11,10 @@ import java.util.Optional;
  * Обеспечивает доступ к данным пользователей в БД.
  * JpaRepository предоставляет стандартные CRUD операции и методы запросов.
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга
  * @version 1.0
  */
-// @Repository - помечает интерфейс как компонент доступа к данным Spring
 @Repository
-// Расширяем JpaRepository с типами User (сущность) и Long (тип ID)
 public interface UserRepository extends JpaRepository<User, Long> {
 
     /**

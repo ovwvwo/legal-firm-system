@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<!--
+    Страница списка дел
+
+-->
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список дел - Юридическая фирма</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .badge-status {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .action-buttons .btn {
+            margin: 2px;
+        }
+
+        .priority-critical {
+            color: #dc3545;
+        }
+
+        .priority-high {
+            color: #fd7e14;
+        }
+
+        .priority-medium {
+            color: #ffc107;
+        }
+
+        .priority-low {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="fas fa-tachometer-alt"></i> Панель управления
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/cases/list}">
+                        <i class="fas fa-briefcase"></i> Дела
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-user"></i>
+                        <span sec:authentication="principal.username">Пользователь</span>
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Выход
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4">
+      <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-briefcase"></i> Список дел</h1>
+            <p class="text-muted">Всего дел: <span th:text="${#lists.size(cases)}">0</span></p>
+        </div>
+        <div class="col-md-6 text-end">
+            <!-- Кнопка добавления (только для юристов и выше) -->
+            <a th:href="@{/cases/add}"
+               class="btn btn-success"
+               sec:authorize="hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')">
+                <i class="fas fa-plus"></i> Добавить дело
+            </a>
+            <!-- Кнопка поиска -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal">
+                <i class="fas fa-search"></i> Поиск
+            </button>
+        </div>
+    </div>
+
+    <!-- Сообщения -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Таблица дел -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>№ дела</th>
+                        <th>Название</th>
+                        <th>Категория</th>
+                        <th>Статус</th>
+                        <th>Клиент</th>
+                        <th>Юрист</th>
+                        <th>Приоритет</th>
+                        <th>Дата открытия</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Проверка наличия дел -->
+                    <tr th:if="${#lists.isEmpty(cases)}">
+                        <td colspan="9" class="text-center text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            <p>Нет дел для отображения</p>
+                        </td>
+                    </tr>
+
+                    <tr th:each="case : ${cases}"
+                        th:onclick="|window.location.href='${/cases/view/${case.id}}'|"
+                        class="table-row-clickable">
+                        <!-- style="cursor: pointer;"> -->
+                        <td>
+                            <strong th:text="${case.caseNumber}">2025/001</strong>
+                        </td>
+
+                        <td th:text="${case.title}">Название дела</td>
+
+                        <td>
+                            <span class="badge bg-info" th:text="${case.category.displayName}">Категория</span>
+                        </td>
+
+                        <!-- Статус -->
+                        <td>
+                                <span class="badge badge-status"
+                                      th:classappend="${case.status.name() == 'NEW'} ? 'bg-secondary' :
+                                                      ${case.status.name() == 'IN_PROGRESS'} ? 'bg-primary' :
+                                                      ${case.status.name() == 'AWAITING_HEARING'} ? 'bg-warning' :
+                                                      ${case.status.name() == 'SUSPENDED'} ? 'bg-dark' :
+                                                      ${case.status.name() == 'WON'} ? 'bg-success' :
+                                                      ${case.status.name() == 'LOST'} ? 'bg-danger' :
+                                                      ${case.status.name() == 'SETTLED'} ? 'bg-info' :
+                                                      'bg-secondary'"
+                                      th:text="${case.status.displayName}">
+                                    Статус
+                                </span>
+                        </td>
+
+                        <td th:text="${case.client.fullName}">Клиент</td>
+
+                        <td>
+                            <span th:if="${case.lawyer != null}" th:text="${case.lawyer.fullName}">Юрист</span>
+                            <span th:if="${case.lawyer == null}" class="text-muted">Не назначен</span>
+                        </td>
+
+                        <td>
+                            <i class="fas fa-flag"
+                               th:classappend="${case.priority.name() == 'CRITICAL'} ? 'priority-critical' :
+                                                  ${case.priority.name() == 'HIGH'} ? 'priority-high' :
+                                                  ${case.priority.name() == 'MEDIUM'} ? 'priority-medium' :
+                                                  'priority-low'"></i>
+                            <span th:text="${case.priority.displayName}">Приоритет</span>
+                        </td>
+
+                        <td th:text="${#temporals.format(case.openDate, 'dd.MM.yyyy')}">01.01.2025</td>
+
+                        <td class="action-buttons" onclick="event.stopPropagation();">
+
+                            <a th:href="@{/cases/view/{id}(id=${case.id})}"
+                               class="btn btn-sm btn-info"
+                               title="Просмотр">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <!-- Кнопка редактирования (для юристов и выше) -->
+                            <a th:href="@{/cases/edit/{id}(id=${case.id})}"
+                               class="btn btn-sm btn-warning"
+                               sec:authorize="hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')"
+                               title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <!-- Кнопка удаления (только для менеджеров и админов) -->
+                            <!-- Почему-то ошибка!!! onclick="confirmDelete(event, [[${case.id}]], [[${case.title}]])" -->
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    sec:authorize="hasAnyRole('MANAGER', 'ADMIN')"
+                                    th:onclick="'confirmDelete(event, ' + ${case.id} + ', \'' + ${#strings.escapeJavaScript(case.title)} + '\')'"
+                                    title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="searchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-search"></i> Поиск дел
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/cases/search}" method="get">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="keyword" class="form-label">Ключевое слово</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword"
+                               placeholder="Поиск по номеру, названию или описанию">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Статус</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">Все статусы</option>
+                            <option value="NEW">Новое</option>
+                            <option value="IN_PROGRESS">В работе</option>
+                            <option value="AWAITING_HEARING">Ожидает заседания</option>
+                            <option value="SUSPENDED">Приостановлено</option>
+                            <option value="WON">Выиграно</option>
+                            <option value="LOST">Проиграно</option>
+                            <option value="SETTLED">Мировое соглашение</option>
+                            <option value="CLOSED">Закрыто</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Категория</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">Все категории</option>
+                            <option value="CIVIL">Гражданское дело</option>
+                            <option value="CRIMINAL">Уголовное дело</option>
+                            <option value="ADMINISTRATIVE">Административное дело</option>
+                            <option value="CORPORATE">Корпоративное дело</option>
+                            <option value="FAMILY">Семейное дело</option>
+                            <option value="LABOR">Трудовой спор</option>
+                            <option value="TAX">Налоговое дело</option>
+                            <option value="INTELLECTUAL_PROPERTY">Интеллектуальная собственность</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Форма удаления (скрытая) -->
+<form id="deleteForm" method="post" style="display: none;">
+    <input type="hidden" name="_method" value="delete">
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    function confirmDelete(event, caseId, caseTitle) {
+        event.stopPropagation();
+
+        if (confirm('Вы действительно хотите удалить дело "' + caseTitle + '"?\nЭто действие нельзя отменить.')) {
+            const form = document.getElementById('deleteForm');
+            form.action = /*[[@{/cases/delete/}]]*/ '/cases/delete/' + caseId;
+            form.submit();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,19 +1,11 @@
-// ============================================
-// ConsultationRepository.java
-// ============================================
 package ru.fa.legal.repository;
-
-// Импорт Spring Data JPA
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-// Импорт моделей
 import ru.fa.legal.model.Consultation;
 import ru.fa.legal.model.ConsultationStatus;
 import ru.fa.legal.model.User;
-
-// Импорт классов для работы с датами и коллекциями
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +13,7 @@ import java.util.List;
  * Репозиторий для работы с консультациями.
  * Обеспечивает доступ к данным консультаций в БД.
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга
  * @version 1.0
  */
 @Repository

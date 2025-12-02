@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--
+    Главная страница приложения (landing page)
+-->
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Юридическая фирма - Главная</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+
+        .service-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .features-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/login}">
+                        <i class="fas fa-sign-in-alt"></i> Вход
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/register}">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="hero-section">
+    <div class="container">
+        <h1>
+            <i class="fas fa-balance-scale"></i>
+            Информационно-справочная система юридической фирмы
+        </h1>
+        <p class="lead">
+            Современное решение для управления делами, консультациями и документами
+        </p>
+        <div class="mt-4">
+            <a th:href="@{/login}" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-sign-in-alt"></i> Войти в систему
+            </a>
+            <a th:href="@{/register}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-user-plus"></i> Зарегистрироваться
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2>Возможности системы</h2>
+                <p class="text-muted">Полный набор инструментов для управления юридической практикой</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card service-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-briefcase service-icon text-primary"></i>
+                        <h4>Управление делами</h4>
+                        <p class="text-muted">
+                            Ведение дел клиентов, отслеживание статусов, назначение юристов и контроль сроков
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка: Консультации -->
+            <div class="col-md-4">
+                <div class="card service-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-calendar-check service-icon text-success"></i>
+                        <h4>Консультации</h4>
+                        <p class="text-muted">
+                            Запись на консультации, управление расписанием, онлайн и офлайн встречи
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card service-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-file-alt service-icon text-info"></i>
+                        <h4>Документы</h4>
+                        <p class="text-muted">
+                            Хранение и управление документами, контроль версий, быстрый доступ
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card service-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-chart-bar service-icon text-warning"></i>
+                        <h4>Статистика</h4>
+                        <p class="text-muted">
+                            Аналитика работы, отчеты по делам, визуализация данных
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card service-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-users service-icon text-danger"></i>
+                        <h4>Управление пользователями</h4>
+                        <p class="text-muted">
+                            Разделение ролей, управление доступом, профили пользователей
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card service-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-shield-alt service-icon text-secondary"></i>
+                        <h4>Безопасность</h4>
+                        <p class="text-muted">
+                            Защита данных, шифрование паролей, контроль доступа
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2>Преимущества системы</h2>
+                <p class="text-muted">Почему выбирают нас</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
+                <h5>Быстрая работа</h5>
+                <p class="text-muted">Оптимизированная производительность</p>
+            </div>
+
+            <div class="col-md-3 text-center">
+                <i class="fas fa-lock fa-3x text-success mb-3"></i>
+                <h5>Безопасность</h5>
+                <p class="text-muted">Надежная защита данных</p>
+            </div>
+
+            <div class="col-md-3 text-center">
+                <i class="fas fa-mobile-alt fa-3x text-info mb-3"></i>
+                <h5>Адаптивность</h5>
+                <p class="text-muted">Работа на любых устройствах</p>
+            </div>
+
+            <div class="col-md-3 text-center">
+                <i class="fas fa-headset fa-3x text-warning mb-3"></i>
+                <h5>Поддержка</h5>
+                <p class="text-muted">Техническая поддержка 24/7</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Футер -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>
+                    <i class="fas fa-balance-scale"></i> Юридическая фирма
+                </h5>
+                <p class="text-muted">
+                    Информационно-справочная система для управления юридической практикой
+                </p>
+            </div>
+            <div class="col-md-3">
+                <h5>Ссылки</h5>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/login}" class="text-light text-decoration-none">Вход</a></li>
+                    <li><a th:href="@{/register}" class="text-light text-decoration-none">Регистрация</a></li>
+                    <li><a th:href="@{/about}" class="text-light text-decoration-none">Об авторе</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Контакты</h5>
+                <p class="text-muted">
+                    <i class="fas fa-envelope"></i> info@legalfirm.ru<br>
+                    <i class="fas fa-phone"></i> +7 (495) 123-45-67
+                </p>
+            </div>
+        </div>
+        <hr class="bg-light">
+        <div class="row">
+            <div class="col text-center">
+                <p class="mb-0 text-muted">
+                    &copy; 2025 Информационно-справочная система юридической фирмы.
+                    Курсовая работа Киселевой Ольги Ивановны, группа ДПИ23-1
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

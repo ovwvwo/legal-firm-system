@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!--
     Страница статистики системы
-    Автор: Иванов Егор Борисович
 -->
 <html lang="ru"
       xmlns:th="http://www.thymeleaf.org"
@@ -11,16 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика - Юридическая фирма</title>
 
-    <!-- Подключение Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Подключение Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Подключение Chart.js для диаграмм -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <!-- Встроенные стили -->
     <style>
-        /* Стили для статистических карточек */
         .stat-card {
             transition: transform 0.3s ease;
             border: none;
@@ -32,13 +26,11 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
-        /* Иконки */
         .stat-icon {
             font-size: 2.5rem;
             opacity: 0.8;
         }
 
-        /* Контейнер для диаграмм */
         .chart-container {
             position: relative;
             height: 300px;
@@ -47,7 +39,7 @@
     </style>
 </head>
 <body>
-<!-- Навигационная панель -->
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}">
@@ -85,9 +77,7 @@
     </div>
 </nav>
 
-<!-- Основной контент -->
 <div class="container-fluid mt-4">
-    <!-- Заголовок -->
     <div class="row mb-4">
         <div class="col">
             <h1><i class="fas fa-chart-line"></i> Статистика системы</h1>
@@ -97,7 +87,6 @@
 
     <!-- Статистические карточки -->
     <div class="row mb-4">
-        <!-- Карточка: Всего пользователей -->
         <div class="col-md-3 mb-3">
             <div class="card stat-card">
                 <div class="card-body text-center">
@@ -108,7 +97,6 @@
             </div>
         </div>
 
-        <!-- Карточка: Всего дел -->
         <div class="col-md-3 mb-3">
             <div class="card stat-card">
                 <div class="card-body text-center">
@@ -119,7 +107,6 @@
             </div>
         </div>
 
-        <!-- Карточка: Всего консультаций -->
         <div class="col-md-3 mb-3">
             <div class="card stat-card">
                 <div class="card-body text-center">
@@ -130,7 +117,6 @@
             </div>
         </div>
 
-        <!-- Карточка: Всего документов -->
         <div class="col-md-3 mb-3">
             <div class="card stat-card">
                 <div class="card-body text-center">
@@ -142,7 +128,6 @@
         </div>
     </div>
 
-    <!-- Ключевые показатели -->
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card">
@@ -172,7 +157,7 @@
             </div>
         </div>
 
-        <!-- Топ юристов -->
+        <!-- Топ юристов, можно удалить в целом -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-success text-white">
@@ -182,7 +167,6 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <!-- Цикл по топ юристам -->
                         <li class="list-group-item" th:each="entry, iterStat : ${topLawyers}">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -198,9 +182,7 @@
         </div>
     </div>
 
-    <!-- Диаграммы -->
     <div class="row mb-4">
-        <!-- Диаграмма: Дела по статусам -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-info text-white">
@@ -210,14 +192,12 @@
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
-                        <!-- Canvas для диаграммы Chart.js -->
                         <canvas id="caseStatusChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Диаграмма: Дела по категориям -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-warning text-dark">
@@ -234,7 +214,6 @@
         </div>
     </div>
 
-    <!-- Детальная статистика по делам -->
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card">
@@ -245,12 +224,10 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <!-- Статусы дел -->
                         <div class="col-md-6">
                             <h6>По статусам:</h6>
                             <table class="table table-sm">
                                 <tbody>
-                                <!-- Цикл по статусам -->
                                 <tr th:each="entry : ${casesByStatus}">
                                     <td th:text="${entry.key.displayName}">Статус</td>
                                     <td class="text-end">
@@ -261,12 +238,10 @@
                             </table>
                         </div>
 
-                        <!-- Категории дел -->
                         <div class="col-md-6">
                             <h6>По категориям:</h6>
                             <table class="table table-sm">
                                 <tbody>
-                                <!-- Цикл по категориям -->
                                 <tr th:each="entry : ${casesByCategory}">
                                     <td th:text="${entry.key.displayName}">Категория</td>
                                     <td class="text-end">
@@ -283,7 +258,6 @@
     </div>
 </div>
 
-<!-- Подвал -->
 <footer class="mt-5 py-3 bg-light border-top">
     <div class="container text-center">
         <p class="text-muted mb-0">
@@ -292,10 +266,10 @@
     </div>
 </footer>
 
-<!-- Подключение Bootstrap JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- JavaScript для построения диаграмм -->
+
 <script th:inline="javascript">
     // Получаем данные из Thymeleaf в JavaScript переменные
     /*<![CDATA[*/
@@ -313,20 +287,16 @@
     // Функция для инициализации диаграмм после загрузки страницы
     document.addEventListener('DOMContentLoaded', function() {
 
-        // ===== ДИАГРАММА СТАТУСОВ ДЕЛА (круговая) =====
-
-        // Получаем canvas элемент
         var ctxStatus = document.getElementById('caseStatusChart').getContext('2d');
 
-        // Создаем круговую диаграмму
         new Chart(ctxStatus, {
-            type: 'pie', // Тип диаграммы: круговая
+            type: 'pie', // Тип круговая-попробовать как выглядит с другой
             data: {
-                labels: caseStatusLabels, // Метки из Thymeleaf
+                labels: caseStatusLabels,
                 datasets: [{
                     label: 'Количество дел',
-                    data: caseStatusData, // Данные из Thymeleaf
-                    backgroundColor: [ // Цвета секторов
+                    data: caseStatusData,
+                    backgroundColor: [
                         'rgba(54, 162, 235, 0.8)',
                         'rgba(255, 206, 86, 0.8)',
                         'rgba(75, 192, 192, 0.8)',
@@ -345,7 +315,7 @@
                 maintainAspectRatio: false, // Не сохранять пропорции
                 plugins: {
                     legend: {
-                        position: 'bottom' // Легенда снизу
+                        position: 'bottom'
                     },
                     title: {
                         display: true,
@@ -355,20 +325,16 @@
             }
         });
 
-        // ===== ДИАГРАММА КАТЕГОРИЙ ДЕЛ (столбчатая) =====
-
-        // Получаем canvas элемент
         var ctxCategory = document.getElementById('caseCategoryChart').getContext('2d');
 
-        // Создаем столбчатую диаграмму
         new Chart(ctxCategory, {
-            type: 'bar', // Тип диаграммы: столбчатая
+            type: 'bar', // Тип столбчатая
             data: {
                 labels: caseCategoryLabels,
                 datasets: [{
                     label: 'Количество дел',
                     data: caseCategoryData,
-                    backgroundColor: 'rgba(255, 159, 64, 0.8)', // Единый цвет для столбцов
+                    backgroundColor: 'rgba(255, 159, 64, 0.8)',
                     borderColor: 'rgba(255, 159, 64, 1)',
                     borderWidth: 2
                 }]
@@ -380,13 +346,13 @@
                     y: {
                         beginAtZero: true, // Начинать ось Y с нуля
                         ticks: {
-                            stepSize: 1 // Шаг оси (целые числа)
+                            stepSize: 1 // Шаг оси
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false // Не показывать легенду
+                        display: false // Не показывать легенду!!!
                     },
                     title: {
                         display: true,

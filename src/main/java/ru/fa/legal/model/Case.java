@@ -1,17 +1,10 @@
 package ru.fa.legal.model;
-
-// Импорт аннотаций JPA для работы с базой данных
 import jakarta.persistence.*;
-// Импорт аннотаций для валидации данных
 import jakarta.validation.constraints.*;
-// Импорт аннотаций Lombok для генерации кода
 import lombok.*;
-
-// Импорт классов для работы с датами
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-// Импорт классов для работы с коллекциями
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +13,7 @@ import java.util.Set;
  * Представляет информацию о деле клиента в системе.
  * Реализует связь "родитель-дочка" с документами.
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга Ивановна
  * @version 1.0
  */
 // @Entity - помечает класс как сущность JPA
@@ -103,7 +96,6 @@ public class Case {
      */
     // @ManyToOne - определяет связь "многие к одному"
     // @JoinColumn - указывает столбец для связи
-    // name = "client_id" - имя столбца внешнего ключа
     // nullable = false - связь обязательна
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
@@ -293,7 +285,7 @@ enum CaseCategory {
  * Перечисление статусов дел.
  * Определяет текущее состояние работы над делом.
  */
-enum CaseStatus {
+public enum CaseStatus {
     /** Новое дело, только открыто */
     NEW("Новое"),
 

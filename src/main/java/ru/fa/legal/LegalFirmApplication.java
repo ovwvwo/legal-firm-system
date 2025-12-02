@@ -1,6 +1,5 @@
 package ru.fa.legal;
 
-// Импорт Spring Boot аннотаций
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

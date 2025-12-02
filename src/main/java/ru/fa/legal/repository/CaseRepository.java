@@ -1,20 +1,12 @@
-// ============================================
-// CaseRepository.java
-// ============================================
 package ru.fa.legal.repository;
-
-// Импорт Spring Data JPA
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-// Импорт моделей
 import ru.fa.legal.model.Case;
 import ru.fa.legal.model.CaseStatus;
 import ru.fa.legal.model.CaseCategory;
 import ru.fa.legal.model.User;
-
-// Импорт классов для работы с датами и коллекциями
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +15,7 @@ import java.util.Optional;
  * Репозиторий для работы с делами.
  * Обеспечивает доступ к данным дел в БД.
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга
  * @version 1.0
  */
 @Repository

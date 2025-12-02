@@ -1,13 +1,7 @@
 package ru.fa.legal.model;
-
-// Импорт аннотаций JPA
 import jakarta.persistence.*;
-// Импорт аннотаций валидации
 import jakarta.validation.constraints.*;
-// Импорт Lombok аннотаций
 import lombok.*;
-
-// Импорт классов для работы с датами и временем
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -15,16 +9,14 @@ import java.time.LocalDateTime;
  * Сущность консультации.
  * Представляет запись на юридическую консультацию.
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга Ивановна
  * @version 1.0
  */
 // @Entity - помечает класс как сущность JPA
 @Entity
 // @Table - указывает имя таблицы и индексы
 @Table(name = "consultations", indexes = {
-        // Индекс по дате консультации для сортировки и фильтрации
-        @Index(name = "idx_consultation_date", columnList = "consultationDate"),
-        // Индекс по статусу консультации
+           @Index(name = "idx_consultation_date", columnList = "consultationDate"),
         @Index(name = "idx_consultation_status", columnList = "status")
 })
 // Lombok аннотации
@@ -191,11 +183,9 @@ public class Consultation {
      * @return дата и время окончания консультации
      */
     public LocalDateTime getEndTime() {
-        // Проверяем, что дата консультации установлена
         if (consultationDate == null) {
             return null;
         }
-        // Добавляем продолжительность к дате начала
         return consultationDate.plusMinutes(durationMinutes);
     }
 
@@ -205,11 +195,9 @@ public class Consultation {
      * @return true, если консультация еще не прошла
      */
     public boolean isUpcoming() {
-        // Проверяем, что дата установлена
         if (consultationDate == null) {
             return false;
         }
-        // Сравниваем с текущим временем
         return consultationDate.isAfter(LocalDateTime.now());
     }
 
@@ -219,16 +207,13 @@ public class Consultation {
      * @return true, если консультация уже завершилась
      */
     public boolean isPast() {
-        // Проверяем, что дата установлена
         if (consultationDate == null) {
             return false;
         }
-        // Получаем время окончания
         LocalDateTime endTime = getEndTime();
         if (endTime == null) {
             return false;
         }
-        // Сравниваем с текущим временем
         return endTime.isBefore(LocalDateTime.now());
     }
 

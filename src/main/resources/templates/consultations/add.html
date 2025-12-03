@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--
+    Форма добавления консультации
+
+-->
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запись на консультацию - Юридическая фирма</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .required-label::after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="fas fa-tachometer-alt"></i> Панель управления
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/consultations/list}">
+                        <i class="fas fa-calendar-check"></i> Список консультаций
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="form-wrapper">
+
+        <div class="row mb-4">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-calendar-plus"></i> Запись на консультацию
+                </h1>
+                <p class="text-muted">Заполните форму для записи на консультацию</p>
+            </div>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="@{/consultations/add}" th:object="${consultation}" method="post" class="needs-validation" novalidate>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Основная информация
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-12 mb-3">
+                            <label for="topic" class="form-label required-label">
+                                Тема консультации
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{topic}"
+                                   th:errorclass="is-invalid"
+                                   id="topic"
+                                   placeholder="Например: Консультация по трудовому спору"
+                                   required
+                                   maxlength="200">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('topic')}" th:errors="*{topic}"></div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">
+                                Подробное описание вопроса
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{description}"
+                                      id="description"
+                                      rows="4"
+                                      placeholder="Опишите ваш вопрос подробнее..."></textarea>
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt"></i> Дата и время
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                      >
+                        <div class="col-md-6 mb-3">
+                            <label for="consultationDate" class="form-label required-label">
+                                Дата и время консультации
+                            </label>
+                            <input type="datetime-local"
+                                   class="form-control"
+                                   th:field="*{consultationDate}"
+                                   th:errorclass="is-invalid"
+                                   id="consultationDate"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('consultationDate')}" th:errors="*{consultationDate}"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="durationMinutes" class="form-label required-label">
+                                Продолжительность (минут)
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{durationMinutes}"
+                                    id="durationMinutes"
+                                    required>
+                                <option value="30">30 минут</option>
+                                <option value="60" selected>60 минут (1 час)</option>
+                                <option value="90">90 минут (1.5 часа)</option>
+                                <option value="120">120 минут (2 часа)</option>
+                            </select>
+                            <div class="invalid-feedback">Выберите продолжительность</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog"></i> Параметры консультации
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label required-label">
+                                Тип консультации
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{type}"
+                                    id="type"
+                                    required>
+                                <option value="">-- Выберите тип --</option>
+                                <option th:each="ctype : ${consultationTypes}"
+                                        th:value="${ctype}"
+                                        th:text="${ctype.displayName}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите тип консультации</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3" sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                            <label for="client" class="form-label required-label">
+                                Клиент
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{client.id}"
+                                    id="client"
+                                    required>
+                                <option value="">-- Выберите клиента --</option>
+                                <option th:each="cl : ${clients}"
+                                        th:value="${cl.id}"
+                                        th:text="${cl.fullName + ' (' + cl.email + ')'}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите клиента</div>
+                        </div>
+
+                        <input type="hidden"
+                               th:if="${currentUser.role.name() == 'CLIENT'}"
+                               th:field="*{client.id}"
+                               th:value="${currentUser.id}">
+
+                        <div class="col-md-6 mb-3">
+                            <label for="lawyer" class="form-label">
+                                Предпочитаемый юрист
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{lawyer.id}"
+                                    id="lawyer">
+                                <option value="">-- Не важно --</option>
+                                <option th:each="law : ${lawyers}"
+                                        th:value="${law.id}"
+                                        th:text="${law.fullName}">
+                                </option>
+                            </select>
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+
+                        <!-- Стоимость (только для админов/менеджеров) -->
+                        <div class="col-md-6 mb-3" sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                            <label for="cost" class="form-label">
+                                Стоимость консультации (₽)
+                            </label>
+                            <input type="number"
+                                   class="form-control"
+                                   th:field="*{cost}"
+                                   id="cost"
+                                   placeholder="3000.00"
+                                   step="0.01"
+                                   min="0">
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" th:field="*{status}" value="SCHEDULED">
+            <input type="hidden" th:field="*{isPaid}" value="false">
+            <input type="hidden" th:field="*{reminderSent}" value="false">
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <!-- Кнопка отмены -->
+                        <a th:href="@{/consultations/list}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-calendar-check"></i> Записаться
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    (function() {
+        'use strict';
+
+        const form = document.querySelector('.needs-validation');
+
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        }, false);
+
+        // Устанавливаем минимальную дату - текущая дата и время
+        const dateInput = document.getElementById('consultationDate');
+        if (dateInput) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            dateInput.min = now.toISOString().slice(0, 16);
+        }
+    })();
+</script>
+</body>
+</html>

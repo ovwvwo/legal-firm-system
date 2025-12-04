@@ -43,7 +43,7 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner loadInitialData() {
         return args -> {
-            if (userRepository.count() > 0) {
+            if (userRepository.count() > 10) {
                 System.out.println("=================================================");
                 System.out.println("База данных уже содержит данные. Пропуск инициализации.");
                 System.out.println("=================================================");
@@ -54,13 +54,10 @@ public class DataInitializer {
             System.out.println("Начало инициализации начальных данных...");
             System.out.println("=================================================");
 
-            // ===== СОЗДАНИЕ ПОЛЬЗОВАТЕЛЕЙ =====
-
-            // Администратор
             User admin = User.builder()
-                    .username("admin")
+                    .username("admin12")
                     .password(passwordEncoder.encode("admin123"))
-                    .email("admin@legalfirm.ru")
+                    .email("admin321@legalfirm.ru")
                     .fullName("Администратор Системы")
                     .phoneNumber("+7 (495) 123-45-67")
                     .role(UserRole.ADMIN)
@@ -71,9 +68,9 @@ public class DataInitializer {
 
             // Менеджер
             User manager = User.builder()
-                    .username("manager")
+                    .username("manager12")
                     .password(passwordEncoder.encode("manager123"))
-                    .email("manager@legalfirm.ru")
+                    .email("manager321@legalfirm.ru")
                     .fullName("Петров Петр Петрович")
                     .phoneNumber("+7 (495) 123-45-68")
                     .role(UserRole.MANAGER)
@@ -84,9 +81,9 @@ public class DataInitializer {
 
             // Юристы
             User lawyer1 = User.builder()
-                    .username("lawyer1")
+                    .username("lawyer12")
                     .password(passwordEncoder.encode("lawyer123"))
-                    .email("ivanov@legalfirm.ru")
+                    .email("ivanov231@legalfirm.ru")
                     .fullName("Иванов Иван Иванович")
                     .phoneNumber("+7 (495) 123-45-69")
                     .role(UserRole.LAWYER)
@@ -96,9 +93,9 @@ public class DataInitializer {
             System.out.println("✓ Создан юрист: lawyer1 / lawyer123");
 
             User lawyer2 = User.builder()
-                    .username("lawyer2")
+                    .username("lawyer22")
                     .password(passwordEncoder.encode("lawyer123"))
-                    .email("sidorova@legalfirm.ru")
+                    .email("sidorova321@legalfirm.ru")
                     .fullName("Сидорова Анна Сергеевна")
                     .phoneNumber("+7 (495) 123-45-70")
                     .role(UserRole.LAWYER)
@@ -107,11 +104,10 @@ public class DataInitializer {
             userRepository.save(lawyer2);
             System.out.println("✓ Создан юрист: lawyer2 / lawyer123");
 
-            // Клиенты
             User client1 = User.builder()
-                    .username("client1")
+                    .username("client12")
                     .password(passwordEncoder.encode("client123"))
-                    .email("smirnov@example.com")
+                    .email("smirnov23@example.com")
                     .fullName("Смирнов Алексей Владимирович")
                     .phoneNumber("+7 (916) 123-45-67")
                     .role(UserRole.CLIENT)
@@ -121,7 +117,7 @@ public class DataInitializer {
             System.out.println("✓ Создан клиент: client1 / client123");
 
             User client2 = User.builder()
-                    .username("client2")
+                    .username("client22")
                     .password(passwordEncoder.encode("client123"))
                     .email("kuznetsova@example.com")
                     .fullName("Кузнецова Елена Дмитриевна")
@@ -133,7 +129,7 @@ public class DataInitializer {
             System.out.println("✓ Создан клиент: client2 / client123");
 
             User client3 = User.builder()
-                    .username("client3")
+                    .username("client32")
                     .password(passwordEncoder.encode("client123"))
                     .email("popov@example.com")
                     .fullName("Попов Дмитрий Николаевич")
@@ -148,7 +144,7 @@ public class DataInitializer {
 
             // Дело 1
             Case case1 = Case.builder()
-                    .caseNumber("2025/001/ГР")
+                    .caseNumber("2025/011/ГР")
                     .title("Иск о взыскании задолженности по договору займа")
                     .description("Взыскание задолженности по договору займа от 15.01.2024 в размере 500 000 рублей")
                     .category(CaseCategory.CIVIL)
@@ -166,7 +162,7 @@ public class DataInitializer {
 
             // Дело 2
             Case case2 = Case.builder()
-                    .caseNumber("2025/002/СЕМ")
+                    .caseNumber("2025/012/СЕМ")
                     .title("Расторжение брака и раздел имущества")
                     .description("Расторжение брака между супругами и раздел совместно нажитого имущества")
                     .category(CaseCategory.FAMILY)
@@ -184,7 +180,7 @@ public class DataInitializer {
 
             // Дело 3
             Case case3 = Case.builder()
-                    .caseNumber("2025/003/ТРУ")
+                    .caseNumber("2025/013/ТРУ")
                     .title("Восстановление на работе")
                     .description("Оспаривание незаконного увольнения и восстановление в должности")
                     .category(CaseCategory.LABOR)
@@ -201,7 +197,7 @@ public class DataInitializer {
 
             // Дело 4
             Case case4 = Case.builder()
-                    .caseNumber("2024/087/ГР")
+                    .caseNumber("2024/187/ГР")
                     .title("Взыскание убытков по договору поставки")
                     .description("Взыскание убытков за нарушение условий договора поставки товара")
                     .category(CaseCategory.CIVIL)
@@ -225,7 +221,7 @@ public class DataInitializer {
                     .title("Исковое заявление о взыскании задолженности")
                     .documentType(DocumentType.COMPLAINT)
                     .description("Исковое заявление в Измайловский районный суд г. Москвы")
-                    .documentNumber("ИСК-001/2025")
+                    .documentNumber("ИСК-011/2025")
                     .documentDate(LocalDate.of(2025, 1, 15))
                     .status(DocumentStatus.SENT)
                     .isImportant(true)
@@ -240,7 +236,7 @@ public class DataInitializer {
                     .title("Договор об оказании юридических услуг")
                     .documentType(DocumentType.CONTRACT)
                     .description("Договор с клиентом на ведение дела")
-                    .documentNumber("Д-2025/001")
+                    .documentNumber("Д-2025/101")
                     .documentDate(LocalDate.of(2025, 1, 15))
                     .status(DocumentStatus.SIGNED)
                     .isImportant(true)
@@ -255,7 +251,7 @@ public class DataInitializer {
                     .title("Заявление о расторжении брака")
                     .documentType(DocumentType.APPLICATION)
                     .description("Заявление о расторжении брака и разделе имущества")
-                    .documentNumber("ЗАВ-002/2025")
+                    .documentNumber("ЗАВ-102/2025")
                     .documentDate(LocalDate.of(2025, 1, 20))
                     .status(DocumentStatus.APPROVED)
                     .isImportant(true)
@@ -323,13 +319,13 @@ public class DataInitializer {
             System.out.println("Инициализация данных завершена успешно!");
             System.out.println("=================================================");
             System.out.println("\nДоступные учетные записи:");
-            System.out.println("  Администратор: admin / admin123");
-            System.out.println("  Менеджер:      manager / manager123");
-            System.out.println("  Юрист 1:       lawyer1 / lawyer123");
-            System.out.println("  Юрист 2:       lawyer2 / lawyer123");
-            System.out.println("  Клиент 1:      client1 / client123");
-            System.out.println("  Клиент 2:      client2 / client123");
-            System.out.println("  Клиент 3:      client3 / client123");
+            System.out.println("  Администратор: admin12 / admin123");
+            System.out.println("  Менеджер:      manager12 / manager123");
+            System.out.println("  Юрист 1:       lawyer12 / lawyer123");
+            System.out.println("  Юрист 2:       lawyer22 / lawyer123");
+            System.out.println("  Клиент 1:      client11 / client123");
+            System.out.println("  Клиент 2:      client22 / client123");
+            System.out.println("  Клиент 3:      client32 / client123");
             System.out.println("=================================================");
         };
     }

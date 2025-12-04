@@ -1,17 +1,11 @@
 package ru.fa.legal.service;
-
-// Импорт Spring аннотаций
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-// Импорт моделей и репозиториев
 import ru.fa.legal.model.User;
 import ru.fa.legal.model.UserRole;
 import ru.fa.legal.repository.UserRepository;
-
-// Импорт классов для работы с коллекциями и исключениями
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +14,7 @@ import java.util.Optional;
  * Содержит бизнес-логику управления пользователями.
  * Реализует слой сервера в трехзвенной архитектуре.
  *
- * @author Иванов Егор Борисович
+ * @author Киселева Ольга Ивановна
  * @version 1.0
  */
 // @Service - помечает класс как сервисный компонент Spring

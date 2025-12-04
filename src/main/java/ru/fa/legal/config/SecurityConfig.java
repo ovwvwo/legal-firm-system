@@ -115,7 +115,6 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/**")
                 );
 
-        // Возвращаем построенную цепочку фильтров
         return http.build();
     }
 

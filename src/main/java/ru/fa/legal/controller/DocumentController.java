@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.fa.legal.model.*;
+import ru.fa.legal.service.CaseService;
 import ru.fa.legal.service.DocumentService;
 import ru.fa.legal.service.UserService;
 import jakarta.validation.Valid;

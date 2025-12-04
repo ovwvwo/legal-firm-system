@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр консультации - Юридическая фирма</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/consultations/list}">
+                        <i class="fas fa-calendar-check"></i> Список консультаций
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="fas fa-calendar-check"></i> Информация о консультации</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <strong>Тема:</strong>
+                    <p th:text="${consultation.topic}">Тема</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Дата и время:</strong>
+                    <p th:text="${#temporals.format(consultation.consultationDate, 'dd.MM.yyyy HH:mm')}">01.01.2025 10:00</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Продолжительность:</strong>
+                    <p th:text="${consultation.durationMinutes} + ' минут'">60 минут</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Тип:</strong>
+                    <p th:text="${consultation.type.displayName}">Тип</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Статус:</strong>
+                    <p><span class="badge bg-primary" th:text="${consultation.status.displayName}">Статус</span></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Клиент:</strong>
+                    <p th:text="${consultation.client.fullName}">Клиент</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Юрист:</strong>
+                    <p th:if="${consultation.lawyer != null}" th:text="${consultation.lawyer.fullName}">Юрист</p>
+                    <p th:if="${consultation.lawyer == null}" class="text-muted">Не назначен</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Оплата:</strong>
+                    <p>
+                        <span th:if="${consultation.isPaid}" class="badge bg-success">Оплачено</span>
+                        <span th:if="${!consultation.isPaid}" class="badge bg-warning">Не оплачено</span>
+                    </p>
+                </div>
+                <div class="col-md-12 mb-3" th:if="${consultation.description != null}">
+                    <strong>Описание:</strong>
+                    <p th:text="${consultation.description}">Описание</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/consultations/list}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад к списку
+                </a>
+                <a th:href="@{/consultations/edit/{id}(id=${consultation.id})}"
+                   class="btn btn-warning"
+                   sec:authorize="hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -101,7 +101,7 @@ public class SecurityConfig {
 
                 // Обработка исключений безопасности
                 .exceptionHandling(exception -> exception
-                        // Страница для неаутентифицированных пользователей
+                        // Страница для не аутентифицированных пользователей
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login"))
                         // Страница для пользователей без прав доступа

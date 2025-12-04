@@ -106,19 +106,19 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="caseNumber" class="form-label">Номер дела *</label>
-                            <input type="text" class="form-control" th:field="*{caseNumber}" required>
+                            <input id="caseNumber" type="text" class="form-control" th:field="*{caseNumber}" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="openDate" class="form-label">Дата открытия *</label>
-                            <input type="date" class="form-control" th:field="*{openDate}" required>
+                            <input id="openDate" type="date" class="form-control" th:field="*{openDate}" required>
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="title" class="form-label">Название дела *</label>
-                            <input type="text" class="form-control" th:field="*{title}" required>
+                            <input id="title" type="text" class="form-control" th:field="*{title}" required>
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="description" class="form-label">Описание *</label>
-                            <textarea class="form-control" th:field="*{description}" rows="5" required></textarea>
+                            <textarea id="description" class="form-control" th:field="*{description}" rows="5" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="category" class="form-label">Категория *</label>
-                            <select class="form-select" th:field="*{category}" required>
+                            <select id="category" class="form-select" th:field="*{category}" required>
                                 <option th:each="cat : ${categories}"
                                         th:value="${cat}"
                                         th:text="${cat.displayName}"></option>
@@ -140,7 +140,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="status" class="form-label">Статус *</label>
-                            <select class="form-select" th:field="*{status}" required>
+                            <select id="status" class="form-select" th:field="*{status}" required>
                                 <option th:each="stat : ${statuses}"
                                         th:value="${stat}"
                                         th:text="${stat.displayName}"></option>
@@ -148,7 +148,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="priority" class="form-label">Приоритет *</label>
-                            <select class="form-select" th:field="*{priority}" required>
+                            <select id="priority" class="form-select" th:field="*{priority}" required>
                                 <option th:each="prior : ${priorities}"
                                         th:value="${prior}"
                                         th:text="${prior.displayName}"></option>
@@ -166,7 +166,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="client" class="form-label">Клиент *</label>
-                            <select class="form-select" th:field="*{client.id}" required>
+                            <select id="client" class="form-select" th:field="*{client.id}" required>
                                 <option th:each="cl : ${clients}"
                                         th:value="${cl.id}"
                                         th:text="${cl.fullName}"></option>
@@ -174,7 +174,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="lawyer" class="form-label">Юрист</label>
-                            <select class="form-select" th:field="*{lawyer.id}">
+                            <select id="lawyer" class="form-select" th:field="*{lawyer.id}">
                                 <option value="">-- Не назначен --</option>
                                 <option th:each="law : ${lawyers}"
                                         th:value="${law.id}"
@@ -193,19 +193,19 @@
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="cost" class="form-label">Стоимость (₽)</label>
-                            <input type="number" class="form-control" th:field="*{cost}" step="0.01" min="0">
+                            <input id="cost" type="number" class="form-control" th:field="*{cost}" step="0.01" min="0">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="nextHearingDate" class="form-label">Дата заседания</label>
-                            <input type="date" class="form-control" th:field="*{nextHearingDate}">
+                            <input id="nextHearingDate" type="date" class="form-control" th:field="*{nextHearingDate}">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="closeDate" class="form-label">Дата закрытия</label>
-                            <input type="date" class="form-control" th:field="*{closeDate}">
+                            <input id="closeDate" type="date" class="form-control" th:field="*{closeDate}">
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="notes" class="form-label">Заметки</label>
-                            <textarea class="form-control" th:field="*{notes}" rows="3"></textarea>
+                            <textarea id="notes" class="form-control" th:field="*{notes}" rows="3"></textarea>
                         </div>
                     </div>
                 </div>

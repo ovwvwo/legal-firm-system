@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!--
+    Страница списка документов
+
+-->
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список документов - Юридическая фирма</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .important-doc {
+            background-color: #fff3cd;
+        }
+
+        .document-icon {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Навигационная панель -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="fas fa-tachometer-alt"></i> Панель управления
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/documents/list}">
+                        <i class="fas fa-file-alt"></i> Документы
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-user"></i>
+                        <span sec:authentication="principal.username">Пользователь</span>
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Выход
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4">
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-file-alt"></i> Документы</h1>
+            <p class="text-muted">Всего документов: <span th:text="${#lists.size(documents)}">0</span></p>
+        </div>
+        <div class="col-md-6 text-end">
+
+            <a th:href="@{/documents/add}"
+               class="btn btn-success"
+               sec:authorize="hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')">
+                <i class="fas fa-plus"></i> Добавить документ
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Дело</th>
+                        <th>Дата документа</th>
+                        <th>Статус</th>
+                        <th>Важность</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:if="${#lists.isEmpty(documents)}">
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-folder-open fa-3x mb-3 d-block"></i>
+                            <p>Нет документов для отображения</p>
+                        </td>
+                    </tr>
+
+                    <tr th:each="document : ${documents}"
+                        th:classappend="${document.isImportant} ? 'important-doc' : ''"
+                        th:onclick="|window.location.href='@{/documents/view/{id}(id=${document.id})}'|">
+
+                        <td>
+                            <i class="fas fa-file-pdf document-icon text-danger" th:if="${document.mimeType != null and document.mimeType.contains('pdf')}"></i>
+                            <i class="fas fa-file-word document-icon text-primary" th:if="${document.mimeType != null and document.mimeType.contains('word')}"></i>
+                            <i class="fas fa-file-excel document-icon text-success" th:if="${document.mimeType != null and document.mimeType.contains('excel')}"></i>
+                            <i class="fas fa-file-alt document-icon text-secondary" th:if="${document.mimeType == null}"></i>
+
+                            <strong th:text="${document.title}">Название документа</strong>
+                            <br>
+                            <small class="text-muted" th:if="${document.fileName != null}">
+                                <i class="fas fa-paperclip"></i>
+                                <span th:text="${document.fileName}">file.pdf</span>
+                            </small>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-info" th:text="${document.documentType.displayName}">Тип</span>
+                        </td>
+
+                        <td>
+                            <a th:href="@{/cases/view/{id}(id=${document.caseEntity.id})}"
+                               onclick="event.stopPropagation();"
+                               th:text="${document.caseEntity.caseNumber}">
+                                Номер дела
+                            </a>
+                            <br>
+                            <small class="text-muted" th:text="${document.caseEntity.title}">Название дела</small>
+                        </td>
+
+                        <td>
+                                <span th:if="${document.documentDate != null}"
+                                      th:text="${#temporals.format(document.documentDate, 'dd.MM.yyyy')}">01.01.2025</span>
+                            <span th:if="${document.documentDate == null}" class="text-muted">Не указана</span>
+                        </td>
+
+                        <!-- Статус -->
+                        <td>
+                                <span class="badge"
+                                      th:classappend="${document.status.name() == 'DRAFT'} ? 'bg-secondary' :
+                                                      ${document.status.name() == 'UNDER_REVIEW'} ? 'bg-warning' :
+                                                      ${document.status.name() == 'APPROVED'} ? 'bg-success' :
+                                                      ${document.status.name() == 'SIGNED'} ? 'bg-primary' :
+                                                      ${document.status.name() == 'SENT'} ? 'bg-info' :
+                                                      ${document.status.name() == 'RECEIVED'} ? 'bg-success' :
+                                                      'bg-dark'"
+                                      th:text="${document.status.displayName}">
+                                    Статус
+                                </span>
+                        </td>
+
+                        <td>
+                                <span th:if="${document.isImportant}">
+                                    <i class="fas fa-star text-warning"></i> Важный
+                                </span>
+                            <span th:if="${!document.isImportant}" class="text-muted">
+                                    <i class="far fa-star"></i> Обычный
+                                </span>
+                        </td>
+
+                        <td onclick="event.stopPropagation();">
+                            <!-- Кнопка просмотра -->
+                            <a th:href="@{/documents/view/{id}(id=${document.id})}"
+                               class="btn btn-sm btn-info"
+                               title="Просмотр">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a th:href="@{/documents/edit/{id}(id=${document.id})}"
+                               class="btn btn-sm btn-warning"
+                               sec:authorize="hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')"
+                               title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    sec:authorize="hasAnyRole('MANAGER', 'ADMIN')"
+                                    onclick="confirmDelete(event, [[${document.id}]], '[[${document.title}]]')"
+                                    title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Форма удаления (скрытая) -->
+<form id="deleteForm" method="post" style="display: none;"></form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    function confirmDelete(event, documentId, title) {
+        event.stopPropagation();
+
+        if (confirm('Вы действительно хотите удалить документ "' + title + '"?\nЭто действие нельзя отменить.')) {
+            const form = document.getElementById('deleteForm');
+            form.action = /*[[@{/documents/delete/}]]*/ '/documents/delete/' + documentId;
+            form.submit();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--
+    Форма добавления документа
+
+-->
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление документа - Юридическая фирма</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .required-label::after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-balance-scale"></i> Юридическая фирма
+        </a>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/documents/list}">
+                        <i class="fas fa-file-alt"></i> Список документов
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="form-wrapper">
+        <!-- Заголовок -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-file-plus"></i> Добавление документа
+                </h1>
+                <p class="text-muted">Заполните форму для добавления нового документа</p>
+            </div>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="@{/documents/save}" th:object="${document}" method="post" class="needs-validation" novalidate>
+
+            <!-- Блок: Основная информация -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Основная информация
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Название документа -->
+                        <div class="col-md-12 mb-3">
+                            <label for="title" class="form-label required-label">
+                                Название документа
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{title}"
+                                   th:errorclass="is-invalid"
+                                   id="title"
+                                   placeholder="Договор об оказании юридических услуг"
+                                   required
+                                   maxlength="200">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="documentType" class="form-label required-label">
+                                Тип документа
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{documentType}"
+                                    id="documentType"
+                                    required>
+                                <option value="">-- Выберите тип --</option>
+                                <option th:each="dtype : ${documentTypes}"
+                                        th:value="${dtype}"
+                                        th:text="${dtype.displayName}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите тип документа</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="caseEntity" class="form-label required-label">
+                                Дело
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{caseEntity.id}"
+                                    id="caseEntity"
+                                    required>
+                                <option value="">-- Выберите дело --</option>
+                                <option th:each="caseItem : ${cases}"
+                                        th:value="${caseItem.id}"
+                                        th:text="${caseItem.caseNumber + ' - ' + caseItem.title}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите дело</div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">
+                                Описание документа
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{description}"
+                                      id="description"
+                                      rows="3"
+                                      placeholder="Краткое описание содержания документа..."></textarea>
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-signature"></i> Реквизиты документа
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label for="documentNumber" class="form-label">
+                                Номер документа
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{documentNumber}"
+                                   id="documentNumber"
+                                   placeholder="№ 123/2025"
+                                   maxlength="100">
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="documentDate" class="form-label">
+                                Дата документа
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{documentDate}"
+                                   id="documentDate">
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label required-label">
+                                Статус документа
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{status}"
+                                    id="status"
+                                    required>
+                                <option th:each="dstatus : ${documentStatuses}"
+                                        th:value="${dstatus}"
+                                        th:text="${dstatus.displayName}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Выберите статус</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="isImportant" class="form-label">
+                                Важность документа
+                            </label>
+                            <select class="form-select"
+                                    th:field="*{isImportant}"
+                                    id="isImportant">
+                                <option th:value="false">Обычный документ</option>
+                                <option th:value="true">Важный документ</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label for="notes" class="form-label">
+                                Заметки
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{notes}"
+                                      id="notes"
+                                      rows="2"
+                                      placeholder="Дополнительные комментарии..."></textarea>
+                            <small class="form-text text-muted">Необязательное поле</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Информация о файле (для будущего расширения) -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Примечание:</strong> В текущей версии системы загрузка файлов не реализована.
+                Вы можете указать путь к файлу или его местоположение в поле заметок.
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <!-- Кнопка отмены -->
+                        <a th:href="@{/documents/list}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+
+                        <!-- Кнопка сохранения -->
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Сохранить документ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    (function() {
+        'use strict';
+
+        const form = document.querySelector('.needs-validation');
+
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        }, false);
+    })();
+</script>
+</body>
+</html>

@@ -186,7 +186,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <!-- Добавить дело (для юристов и выше) -->
+
                         <div class="col-md-3 mb-3" sec:authorize="hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')">
                             <a th:href="@{/cases/add}" class="btn btn-outline-primary w-100 py-3">
                                 <i class="fas fa-plus fa-2x mb-2"></i>

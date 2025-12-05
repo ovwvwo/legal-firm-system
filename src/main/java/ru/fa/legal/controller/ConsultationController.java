@@ -17,13 +17,6 @@ import ru.fa.legal.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 
-/**
- * Контроллер для управления консультациями.
- * Обрабатывает HTTP запросы, связанные с консультациями.
- *
- * @author Киселева Ольга Ивановна
- * @version 1.0
- */
 @Controller
 @RequestMapping("/consultations")
 public class ConsultationController {
@@ -34,13 +27,6 @@ public class ConsultationController {
     @Autowired
     private UserService userService;
 
-    /**
-     * Отображает список всех консультаций.
-     *
-     * @param model модель для передачи данных
-     * @param authentication объект аутентификации
-     * @return имя шаблона списка консультаций
-     */
     @GetMapping("/list")
     public String listConsultations(Model model, Authentication authentication) {
         String username = authentication.getName();
@@ -74,13 +60,6 @@ public class ConsultationController {
         return "consultations/list";
     }
 
-    /**
-     * Отображает форму добавления новой консультации.
-     *
-     * @param model модель для передачи данных
-     * @param authentication объект аутентификации
-     * @return имя шаблона формы добавления
-     */
     @GetMapping("/add")
     public String showAddForm(Model model, Authentication authentication) {
         String username = authentication.getName();
@@ -103,22 +82,40 @@ public class ConsultationController {
         return "consultations/add";
     }
 
-    /**
-     * Обрабатывает форму добавления новой консультации.
-     *
-     * @param consultation данные консультации из формы
-     * @param bindingResult результаты валидации
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/add")
     public String addConsultation(@Valid @ModelAttribute("consultation") Consultation consultation,
                                   BindingResult bindingResult,
-                                  RedirectAttributes redirectAttributes) {if (bindingResult.hasErrors()) {
-        return "consultations/add";
-    }
+                                  RedirectAttributes redirectAttributes,
+                                  Authentication authentication,
+                                  Model model) {
+
+        if (bindingResult.hasErrors()) {
+            // Перезагружаем данные для формы при ошибке валидации
+            String username = authentication.getName();
+            User currentUser = userService.getUserByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+            model.addAttribute("consultationTypes", ConsultationType.values());
+            model.addAttribute("consultationStatuses", ConsultationStatus.values());
+            model.addAttribute("clients", userService.getUsersByRole(UserRole.CLIENT));
+            model.addAttribute("lawyers", userService.getActiveLawyers());
+            model.addAttribute("currentUser", currentUser);
+
+            return "consultations/add";
+        }
 
         try {
+            // ВАЖНО: Загружаем полные объекты клиента и юриста из БД
+            if (consultation.getClient() != null && consultation.getClient().getId() != null) {
+                User client = userService.getUserById(consultation.getClient().getId());
+                consultation.setClient(client);
+            }
+
+            if (consultation.getLawyer() != null && consultation.getLawyer().getId() != null) {
+                User lawyer = userService.getUserById(consultation.getLawyer().getId());
+                consultation.setLawyer(lawyer);
+            }
+
             Consultation savedConsultation = consultationService.createConsultation(consultation);
 
             redirectAttributes.addFlashAttribute("successMessage",
@@ -135,13 +132,6 @@ public class ConsultationController {
         }
     }
 
-    /**
-     * Отображает форму редактирования консультации.
-     *
-     * @param id идентификатор консультации
-     * @param model модель для передачи данных
-     * @return имя шаблона формы редактирования
-     */
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model) {
@@ -156,27 +146,34 @@ public class ConsultationController {
         return "consultations/edit";
     }
 
-    /**
-     * Обрабатывает форму редактирования консультации.
-     *
-     * @param id идентификатор консультации
-     * @param consultation обновленные данные
-     * @param bindingResult результаты валидации
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/edit/{id}")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String updateConsultation(@PathVariable Long id,
                                      @Valid @ModelAttribute("consultation") Consultation consultation,
                                      BindingResult bindingResult,
-                                     RedirectAttributes redirectAttributes) {
+                                     RedirectAttributes redirectAttributes,
+                                     Model model) {
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("consultationTypes", ConsultationType.values());
+            model.addAttribute("consultationStatuses", ConsultationStatus.values());
+            model.addAttribute("clients", userService.getUsersByRole(UserRole.CLIENT));
+            model.addAttribute("lawyers", userService.getActiveLawyers());
             return "consultations/edit";
         }
 
         try {
+            // Загружаем полные объекты из БД
+            if (consultation.getClient() != null && consultation.getClient().getId() != null) {
+                User client = userService.getUserById(consultation.getClient().getId());
+                consultation.setClient(client);
+            }
+
+            if (consultation.getLawyer() != null && consultation.getLawyer().getId() != null) {
+                User lawyer = userService.getUserById(consultation.getLawyer().getId());
+                consultation.setLawyer(lawyer);
+            }
+
             Consultation updatedConsultation = consultationService.updateConsultation(id, consultation);
 
             redirectAttributes.addFlashAttribute("successMessage",
@@ -192,13 +189,6 @@ public class ConsultationController {
         }
     }
 
-    /**
-     * Удаляет консультацию.
-     *
-     * @param id идентификатор консультации
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public String deleteConsultation(@PathVariable Long id,
@@ -217,14 +207,6 @@ public class ConsultationController {
         return "redirect:/consultations/list";
     }
 
-    /**
-     * Отображает подробную информацию о консультации.
-     *
-     * @param id идентификатор консультации
-     * @param model модель для передачи данных
-     * @param authentication объект аутентификации
-     * @return имя шаблона для отображения
-     */
     @GetMapping("/view/{id}")
     public String viewConsultation(@PathVariable Long id,
                                    Model model,
@@ -235,7 +217,6 @@ public class ConsultationController {
         User currentUser = userService.getUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
-        // Проверяем права доступа для клиентов
         if (currentUser.getRole() == UserRole.CLIENT &&
                 !consultation.getClient().getId().equals(currentUser.getId())) {
             return "redirect:/access-denied";
@@ -247,14 +228,6 @@ public class ConsultationController {
         return "consultations/view";
     }
 
-    /**
-     * Изменяет статус консультации.
-     *
-     * @param id идентификатор консультации
-     * @param status новый статус
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/change-status/{id}")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String changeConsultationStatus(@PathVariable Long id,
@@ -274,13 +247,6 @@ public class ConsultationController {
         return "redirect:/consultations/view/" + id;
     }
 
-    /**
-     * Отмечает консультацию как оплаченную.
-     *
-     * @param id идентификатор консультации
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/mark-paid/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public String markAsPaid(@PathVariable Long id,

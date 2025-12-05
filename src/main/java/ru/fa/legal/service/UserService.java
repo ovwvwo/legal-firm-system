@@ -190,7 +190,6 @@ public class UserService {
      * @return обновленный пользователь
      */
     public User changeUserRole(Long id, UserRole newRole) {
-        // Получаем пользователя
         User user = getUserById(id);
 
         // Устанавливаем новую роль

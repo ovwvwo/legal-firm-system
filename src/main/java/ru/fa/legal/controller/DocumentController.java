@@ -14,44 +14,19 @@ import ru.fa.legal.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 
-/**
- * Контроллер для управления документами.
- * Обрабатывает HTTP запросы, связанные с документами.
- * Реализует работу с дочерними сущностями в связи "родитель-дочка".
- *
- * @author Киселева Ольга Ивановна
- * @version 1.0
- */
 @Controller
 @RequestMapping("/documents")
 public class DocumentController {
 
-    /**
-     * Сервис для работы с документами.
-     */
     @Autowired
     private DocumentService documentService;
 
-    /**
-     * Сервис для работы с делами (родительские сущности).
-     */
     @Autowired
     private CaseService caseService;
 
-    /**
-     * Сервис для работы с пользователями.
-     */
     @Autowired
     private UserService userService;
 
-    /**
-     * Отображает список всех документов.
-     * Доступно юристам, менеджерам и администраторам.
-     *
-     * @param model модель для передачи данных
-     * @param authentication объект аутентификации текущего пользователя
-     * @return имя шаблона со списком документов
-     */
     @GetMapping("/list")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String listDocuments(Model model, Authentication authentication) {
@@ -86,14 +61,6 @@ public class DocumentController {
         return "documents/list";
     }
 
-    /**
-     * Отображает список документов для конкретного дела.
-     * Реализует просмотр дочерних записей для родителя.
-     *
-     * @param caseId идентификатор дела (родительской сущности)
-     * @param model модель для передачи данных
-     * @return имя шаблона со списком документов
-     */
     @GetMapping("/case/{caseId}")
     public String listDocumentsByCase(@PathVariable Long caseId, Model model) {
         Case caseEntity = caseService.getCaseById(caseId);
@@ -103,13 +70,6 @@ public class DocumentController {
         return "documents/list";
     }
 
-    /**
-     * Отображает форму для добавления нового документа.
-     *
-     * @param caseId идентификатор дела (необязательный параметр)
-     * @param model модель для передачи данных
-     * @return имя шаблона формы добавления
-     */
     @GetMapping("/add")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String showAddForm(@RequestParam(required = false) Long caseId, Model model) {
@@ -127,13 +87,6 @@ public class DocumentController {
         return "documents/add";
     }
 
-    /**
-     * Отображает форму редактирования документа.
-     *
-     * @param id идентификатор документа
-     * @param model модель для передачи данных
-     * @return имя шаблона формы редактирования
-     */
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model) {
@@ -145,22 +98,18 @@ public class DocumentController {
         return "documents/edit";
     }
 
-    /**
-     * Сохраняет документ (создание или обновление).
-     * Реализует добавление/обновление дочерней записи.
-     *
-     * @param document данные документа из формы
-     * @param bindingResult результаты валидации
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String saveDocument(@Valid @ModelAttribute("document") Document document,
                                BindingResult bindingResult,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("documentTypes", DocumentType.values());
+            model.addAttribute("documentStatuses", DocumentStatus.values());
+            model.addAttribute("cases", caseService.getAllCases());
+
             if (document.getId() == null) {
                 return "documents/add";
             } else {
@@ -169,6 +118,12 @@ public class DocumentController {
         }
 
         try {
+            // ВАЖНО: Загружаем полный объект дела из БД
+            if (document.getCaseEntity() != null && document.getCaseEntity().getId() != null) {
+                Case caseEntity = caseService.getCaseById(document.getCaseEntity().getId());
+                document.setCaseEntity(caseEntity);
+            }
+
             if (document.getId() == null) {
                 Document savedDocument = documentService.createDocument(document);
                 redirectAttributes.addFlashAttribute("successMessage",
@@ -195,14 +150,6 @@ public class DocumentController {
         }
     }
 
-    /**
-     * Удаляет документ.
-     * Удаляет дочернюю запись, не затрагивая родителя.
-     *
-     * @param id идентификатор документа
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public String deleteDocument(@PathVariable Long id,
@@ -226,13 +173,6 @@ public class DocumentController {
         }
     }
 
-    /**
-     * Отображает подробную информацию о документе.
-     *
-     * @param id идентификатор документа
-     * @param model модель для передачи данных
-     * @return имя шаблона для отображения
-     */
     @GetMapping("/view/{id}")
     public String viewDocument(@PathVariable Long id, Model model) {
         Document document = documentService.getDocumentById(id);
@@ -240,14 +180,6 @@ public class DocumentController {
         return "documents/view";
     }
 
-    /**
-     * Изменяет статус документа.
-     *
-     * @param id идентификатор документа
-     * @param status новый статус
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/change-status/{id}")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String changeDocumentStatus(@PathVariable Long id,
@@ -265,13 +197,6 @@ public class DocumentController {
         return "redirect:/documents/view/" + id;
     }
 
-    /**
-     * Переключает флаг важности документа.
-     *
-     * @param id идентификатор документа
-     * @param redirectAttributes атрибуты для сообщений
-     * @return URL для перенаправления
-     */
     @PostMapping("/toggle-important/{id}")
     @PreAuthorize("hasAnyRole('LAWYER', 'MANAGER', 'ADMIN')")
     public String toggleImportant(@PathVariable Long id,
@@ -290,14 +215,6 @@ public class DocumentController {
         return "redirect:/documents/view/" + id;
     }
 
-    /**
-     * Фильтрация документов дела по типу.
-     *
-     * @param caseId идентификатор дела
-     * @param type тип документа
-     * @param model модель для передачи данных
-     * @return имя шаблона со списком документов
-     */
     @GetMapping("/filter")
     public String filterDocuments(@RequestParam Long caseId,
                                   @RequestParam(required = false) DocumentType type,

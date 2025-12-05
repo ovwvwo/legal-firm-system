@@ -48,6 +48,7 @@ public class Case {
     @Size(max = 50, message = "Номер дела не должен превышать 50 символов")
     private String caseNumber;
 
+
     /**
      * Название дела.
      * Краткое описание сути дела.

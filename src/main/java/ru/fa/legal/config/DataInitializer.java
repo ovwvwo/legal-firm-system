@@ -66,7 +66,6 @@ public class DataInitializer {
             userRepository.save(admin);
             System.out.println("✓ Создан администратор: admin / admin123");
 
-            // Менеджер
             User manager = User.builder()
                     .username("manager12")
                     .password(passwordEncoder.encode("manager123"))
@@ -79,7 +78,6 @@ public class DataInitializer {
             userRepository.save(manager);
             System.out.println("✓ Создан менеджер: manager / manager123");
 
-            // Юристы
             User lawyer1 = User.builder()
                     .username("lawyer12")
                     .password(passwordEncoder.encode("lawyer123"))
@@ -140,9 +138,6 @@ public class DataInitializer {
             userRepository.save(client3);
             System.out.println("✓ Создан клиент: client3 / client123");
 
-            // ===== СОЗДАНИЕ ДЕЛ =====
-
-            // Дело 1
             Case case1 = Case.builder()
                     .caseNumber("2025/011/ГР")
                     .title("Иск о взыскании задолженности по договору займа")
@@ -160,7 +155,6 @@ public class DataInitializer {
             caseRepository.save(case1);
             System.out.println("✓ Создано дело: " + case1.getCaseNumber());
 
-            // Дело 2
             Case case2 = Case.builder()
                     .caseNumber("2025/012/СЕМ")
                     .title("Расторжение брака и раздел имущества")
@@ -178,7 +172,6 @@ public class DataInitializer {
             caseRepository.save(case2);
             System.out.println("✓ Создано дело: " + case2.getCaseNumber());
 
-            // Дело 3
             Case case3 = Case.builder()
                     .caseNumber("2025/013/ТРУ")
                     .title("Восстановление на работе")
@@ -195,7 +188,6 @@ public class DataInitializer {
             caseRepository.save(case3);
             System.out.println("✓ Создано дело: " + case3.getCaseNumber());
 
-            // Дело 4
             Case case4 = Case.builder()
                     .caseNumber("2024/187/ГР")
                     .title("Взыскание убытков по договору поставки")
@@ -213,9 +205,6 @@ public class DataInitializer {
             caseRepository.save(case4);
             System.out.println("✓ Создано дело: " + case4.getCaseNumber());
 
-            // ===== СОЗДАНИЕ ДОКУМЕНТОВ =====
-
-            // Документ 1
             Document doc1 = Document.builder()
                     .caseEntity(case1)
                     .title("Исковое заявление о взыскании задолженности")
@@ -230,7 +219,6 @@ public class DataInitializer {
             documentRepository.save(doc1);
             System.out.println("✓ Создан документ: " + doc1.getTitle());
 
-            // Документ 2
             Document doc2 = Document.builder()
                     .caseEntity(case1)
                     .title("Договор об оказании юридических услуг")
@@ -245,7 +233,6 @@ public class DataInitializer {
             documentRepository.save(doc2);
             System.out.println("✓ Создан документ: " + doc2.getTitle());
 
-            // Документ 3
             Document doc3 = Document.builder()
                     .caseEntity(case2)
                     .title("Заявление о расторжении брака")
@@ -260,9 +247,6 @@ public class DataInitializer {
             documentRepository.save(doc3);
             System.out.println("✓ Создан документ: " + doc3.getTitle());
 
-            // ===== СОЗДАНИЕ КОНСУЛЬТАЦИЙ =====
-
-            // Консультация 1
             Consultation consultation1 = Consultation.builder()
                     .client(client1)
                     .lawyer(lawyer1)
@@ -279,7 +263,6 @@ public class DataInitializer {
             consultationRepository.save(consultation1);
             System.out.println("✓ Создана консультация: " + consultation1.getTopic());
 
-            // Консультация 2
             Consultation consultation2 = Consultation.builder()
                     .client(client2)
                     .lawyer(lawyer2)
@@ -296,7 +279,6 @@ public class DataInitializer {
             consultationRepository.save(consultation2);
             System.out.println("✓ Создана консультация: " + consultation2.getTopic());
 
-            // Консультация 3
             Consultation consultation3 = Consultation.builder()
                     .client(client3)
                     .lawyer(lawyer1)
